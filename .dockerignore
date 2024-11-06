@@ -1,0 +1,5 @@
+node_modules/
+nginxconf/
+Dockerfile
+docker-compose.yml
+app.env

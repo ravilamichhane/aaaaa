@@ -1,0 +1,56 @@
+services:
+
+  
+  httpthree:
+    image: yeasy/simple-web
+    container_name: httpthree
+    networks:
+      - app_net
+    restart: always
+  
+  proxy: 
+    image: nginx:latest
+    container_name: one
+    volumes:
+      - ./nginxconf:/etc/nginx/conf.d
+    networks:
+      - app_net
+    depends_on:
+      - myapp
+      - myapp2
+      - httpthree
+    restart: always
+
+  tunnel:
+    container_name: cloudflared-tunnel
+    image: cloudflare/cloudflared
+    restart: always
+    command: tunnel run
+    networks:
+      - app_net
+    environment:
+      - TUNNEL_TOKEN=
+
+  myapp:
+    image: myapp
+    container_name: app1
+    networks:
+      - app_net
+  
+  myapp2:
+    image: myapp
+    container_name: app2
+    networks:
+      - app_net
+    env_file:
+      - ./app.env
+
+  myapp3:
+    image: myapp
+    container_name: app3
+    networks:
+      - app_net
+
+networks:
+  app_net:
+    driver: bridge
